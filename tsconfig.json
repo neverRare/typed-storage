@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "esnext",
+            "dom",
+        ],
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "downlevelIteration": true,
+        "declaration": true,
+        "outDir": "dist",
+        "target": "es5",
+        "module": "CommonJS"
+    },
+    "include": [
+        "src/**/*",
+    ],
+}

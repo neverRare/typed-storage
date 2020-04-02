@@ -1,0 +1,22 @@
+{
+    "name": "@never-rare/typed-storage",
+    "version": "0.0.1",
+    "description": "A typed and minimal Storage API wrapper",
+    "main": "dist/main.js",
+    "scripts": {
+        "build": "tsc",
+        "prepare": "npm run build"
+    },
+    "repository": "https://github.com/neverRare/typed-storage",
+    "author": "neverRare",
+    "devDependencies": {
+        "typescript": "^3.8.3"
+    },
+    "keywords": [
+        "storage",
+        "localStorage",
+        "sessionStorage"
+    ],
+    "dependencies": {},
+    "license": "MIT"
+}
