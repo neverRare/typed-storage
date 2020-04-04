@@ -61,7 +61,21 @@ export class TypedStorage<Body extends object> {
         }
     }
 }
-}
+export const booleanConverter: Converter<boolean> = {
+    parse: value => {
+        switch (value) {
+            case "0": return false;
+            case "1": return true;
+            default: return null;
+        }
+    },
+    stringify: value => {
+        switch (value) {
+            case false: return "0";
+            case true: return "1";
+        }
+    },
+};
 export const stringConverter: Converter<string> = {
     parse: value => value,
     stringify: value => value,
