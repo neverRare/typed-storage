@@ -57,11 +57,10 @@ export class TypedStorage<Body extends object> {
     }
     setDefaults(body: Body): void {
         for (const key of Object.keys(body) as (string & keyof Body)[]) {
-            if (!this.hasItem(key)) {
-                this.setItem(key, body[key]);
-            }
+            if (!this.hasItem(key)) this.setItem(key, body[key]);
         }
     }
+}
 }
 export const stringConverter: Converter<string> = {
     parse: value => value,
@@ -73,7 +72,7 @@ export function enumConverterFactory<Enum extends string>(enumTuple: Enum[]): Co
             if ((enumTuple as string[]).includes(value)) return value as Enum;
             return null;
         },
-        stringify: value => "" + value,
+        stringify: value => value,
     };
 }
 export const intConverter: Converter<number> = {
