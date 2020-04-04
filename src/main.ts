@@ -57,12 +57,25 @@ export class TypedStorage<Body extends object> {
     }
     setDefaults(body: Body): void {
         for (const key of Object.keys(body) as (string & keyof Body)[]) {
-            if (!this.hasItem(key)) {
-                this.setItem(key, body[key]);
-            }
+            if (!this.hasItem(key)) this.setItem(key, body[key]);
         }
     }
 }
+export const booleanConverter: Converter<boolean> = {
+    parse: value => {
+        switch (value) {
+            case "0": return false;
+            case "1": return true;
+            default: return null;
+        }
+    },
+    stringify: value => {
+        switch (value) {
+            case false: return "0";
+            case true: return "1";
+        }
+    },
+};
 export const stringConverter: Converter<string> = {
     parse: value => value,
     stringify: value => value,
@@ -73,7 +86,7 @@ export function enumConverterFactory<Enum extends string>(enumTuple: Enum[]): Co
             if ((enumTuple as string[]).includes(value)) return value as Enum;
             return null;
         },
-        stringify: value => "" + value,
+        stringify: value => value,
     };
 }
 export const intConverter: Converter<number> = {
