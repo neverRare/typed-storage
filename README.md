@@ -1,6 +1,14 @@
 # TypedStorage
 
-A simple and lightweight Storage API wrapper for providing it meaningful types by converting strings from original Storage to usuable JavaScript values and vice versa in type-safe way. It works with both LocalStorage and SessionStorage.
+A simple and lightweight Storage API wrapper for providing it meaningful types.
+
+## Features
+
+- API similar to Storage but allows any kind of value in type-safe way
+- Customizable converters for fine grain control on how values are stored
+- Simple prefixes for organized structure of Storage
+- Overlapping keys are automatically handled as Error
+- Works with both `localStorage` and `sessionStorage`
 
 ## Installation
 
@@ -12,9 +20,9 @@ TypedStorage is an npm package, use of module bundler such as Rollup.JS or WebPa
 
 ## Initialization
 
-TypedStorage is a generic class. You need to define a type or interface to define the structure of the storage. The type parameter is optional but it should be filled, although, TypeScript seems really good at inferring these.
+When initializing TypedStorage, it needs a record of converters, but luckily for us, the library also provides few predefined converters, which have rather detailed name.
 
-Due to type deletion, explicitly defining converters is required, but luckily for us, the library also provides few predefined converters.
+TypedStorage is generic, you can define the structure of the storage, but it is optional, TypeScript seems really good at inferring these.
 
 ```ts
 import {TypedStorage, stringConverter, enumConverterFactory, isoDateConverter, intConverter} from "@never-rare/typed-storage";
@@ -67,53 +75,49 @@ export function toggleTheme(): void {
 
 With converters, TypedStorage allows you to have fine grain control on how values are parsed and stringified. Other than predefined converters, you can set your own converter. For example, we could create a converter for boolean value, but stored as `"0"` or `"1"` to save some storage quota.
 
-```ts
-import {TypedStorage} from "./main";
+This is what `booleanConverter` actually does, we will just make it again for this example.
 
-interface StorageBody {
-    is_dark: boolean;
-}
-const storage = new TypedStorage<StorageBody>(localStorage, {
-    is_dark: {
-        parse: value => {
-            switch (value) {
-                case "0": return false;
-                case "1": return true;
-                default: return null;
-            }
-        },
-        stringify: value => {
-            switch (value) {
-                case false: return "0";
-                case true: return "1";
-            }
+```ts
+import {TypedStorage, Converter} from "@never-rare/typed-storage";
+
+const booleanConverter: Converter<boolean> = {
+    parse: value => {
+        switch (value) {
+            case "0": return false;
+            case "1": return true;
+            default: return null;
         }
     },
-});
-```
-
-These converter should never throw any error. The `parse` function can return `null` instead. In `stringify` function, there's really no way to invalidate value, since it is already handled via type checking. However, there's some cases where runtime check is needed, for example, `last_played` should never be set to earlier date, but that can be handled before calling `setItem`.
-
-```ts
-import {TypedStorage, isoDateConverter} from "@never-rare/typed-storage";
-
-interface StorageBody {
-    last_played: Date;
-    // ...
-}
-const storage = new TypedStorage<StorageBody>(localStorage, {
-    last_played: isoDateConverter,
+    stringify: value => {
+        switch (value) {
+            case false: return "0";
+            case true: return "1";
+        }
+    },
+};
+const storage = new TypedStorage(localStorage, {
+    music: booleanConverter,
     // ...
 });
-function setLastPlayed(date: Date): void {
-    if (+date > +storage.getItem("last_played")) {
-        storage.setItem("last_played", date);
-    } else {
-        throw new Error(/* ... */);
-    }
-}
 ```
 
 ## Multiple Instance
 
-Upon making multiple instances of TypedStorage, overlapping fields can happen, these are handled and manifested as runtime errors.
+Making multiple instance for each categories is recommended. When using multiple instances, using prefix is also recommended. Prefix just well, prefix the key when values are stored, you can still use methods as if there's no prefix at all.
+
+```ts
+import {TypedStorage, enumConverterFactory, booleanConverter, intConverter} from "./main";
+
+const preferencesStorage = new TypedStorage<Preferences>(localStorage, "preferences_", {
+    theme: enumConverterFactory(["light", "dark", "black"]),
+    sfx: booleanConverter,
+    music: booleanConverter,
+});
+const highscoreStorage = new TypedStorage<Highscore>(localStorage, "highscore_", {
+    easy: intConverter,
+    medium: intConverter,
+    hard: intConverter,
+});
+```
+
+Remember that TypedStorage doesn't automatically add separator to prefix and should be written explicitly within the prefix.
