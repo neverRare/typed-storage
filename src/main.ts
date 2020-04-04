@@ -20,15 +20,29 @@ function getStorageName(storage: Storage): string {
     }
 }
 export class TypedStorage<Body extends object> {
-    constructor(private storage: Storage, private converters: Converters<Body>) {
+    private prefix: string;
+    private converters: Converters<Body>;
+
+    constructor(storage: Storage, converters: Converters<Body>);
+    constructor(storage: Storage, prefix: string, converters: Converters<Body>);
+    constructor(private storage: Storage, prefix: string | Converters<Body>, converters?: Converters<Body>) {
+        if (typeof prefix !== "string") {
+            [prefix, converters] = ["", prefix];
+        }
+        if (!converters) {
+            throw new TypeError("converters not defined (this should be unreachable)");
+        }
+        this.prefix = prefix;
+        this.converters = converters;
         const takenField = getTakenKey(storage);
         for (const key of Object.keys(converters)) {
-            if (takenField.has(key)) throw new Error(`the key "${key}" from ${getStorageName(storage)} is already taken.`);
-            takenField.add(key);
+            const storeKey = this.prefix + key;
+            if (takenField.has(storeKey)) throw new Error(`the key "${storeKey}" from ${getStorageName(storage)} is already taken.`);
+            takenField.add(storeKey);
         }
     }
     getItem<Key extends string & keyof Body>(key: Key): null | Body[Key] {
-        const item = this.storage.getItem(key);
+        const item = this.storage.getItem(this.prefix + key);
         if (item == null) return null;
         return this.converters[key].parse(item);
     }
@@ -36,10 +50,10 @@ export class TypedStorage<Body extends object> {
         return this.getItem(key) != null;
     }
     setItem<Key extends string & keyof Body>(key: Key, value: Body[Key]): void {
-        this.storage.setItem(key, this.converters[key].stringify(value));
+        this.storage.setItem(this.prefix + key, this.converters[key].stringify(value));
     }
     removeItem(key: string & keyof Body): void {
-        this.storage.removeItem(key);
+        this.storage.removeItem(this.prefix + key);
     }
     setDefaults(body: Body): void {
         for (const key of Object.keys(body) as (string & keyof Body)[]) {
