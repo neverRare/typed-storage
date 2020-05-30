@@ -6,7 +6,7 @@ A simple and lightweight Storage API wrapper for providing it meaningful types.
 
 - API similar to Storage but allows any kind of value in type-safe way
 - Customizable converters for fine grain control on how values are stored
-- Simple prefixes for organized structure of Storage
+- Simple key-prefixing for organized structure of Storage
 - Overlapping keys are automatically handled as Error
 - Works with both `localStorage` and `sessionStorage`
 
@@ -122,7 +122,7 @@ import {
     enumConverterFactory,
     booleanConverter,
     intConverter,
-} from "./main";
+} from "@never-rare/typed-storage";
 
 const preferencesStorage = new TypedStorage(
     localStorage,
