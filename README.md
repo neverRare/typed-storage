@@ -114,7 +114,7 @@ const storage = new TypedStorage(localStorage, {
 
 ## Multiple Instance
 
-Making multiple instance for each categories is recommended. When using multiple instances, using prefix is also recommended. Prefix just well, prefix the key when values are stored, you can still use methods as if there's no prefix at all.
+Making multiple instance for each categories is recommended. With this setup, using prefix is also recommended. This prefix the key when values are stored, you can still use methods as if there's no prefix at all.
 
 ```ts
 import {
