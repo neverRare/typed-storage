@@ -14,9 +14,12 @@ function getTakenKey(storage: Storage): Set<string> {
 }
 function getStorageName(storage: Storage): string {
     switch (storage) {
-        case localStorage: return "localStorage";
-        case sessionStorage: return "sessionStorage";
-        default: return "<unknown Storage>";
+        case localStorage:
+            return "localStorage";
+        case sessionStorage:
+            return "sessionStorage";
+        default:
+            return "<unknown Storage>";
     }
 }
 export class TypedStorage<Body extends object> {
@@ -25,19 +28,30 @@ export class TypedStorage<Body extends object> {
 
     constructor(storage: Storage, converters: Converters<Body>);
     constructor(storage: Storage, prefix: string, converters: Converters<Body>);
-    constructor(private storage: Storage, prefix: string | Converters<Body>, converters?: Converters<Body>) {
+    constructor(
+        private storage: Storage,
+        prefix: string | Converters<Body>,
+        converters?: Converters<Body>,
+    ) {
         if (typeof prefix !== "string") {
             [prefix, converters] = ["", prefix];
         }
         if (!converters) {
-            throw new TypeError("converters not defined (this should be unreachable)");
+            throw new TypeError(
+                "converters not defined (this should be unreachable)",
+            );
         }
         this.prefix = prefix;
         this.converters = converters;
         const takenField = getTakenKey(storage);
         for (const key of Object.keys(converters)) {
             const storeKey = this.prefix + key;
-            if (takenField.has(storeKey)) throw new Error(`the key "${storeKey}" from ${getStorageName(storage)} is already taken.`);
+            if (takenField.has(storeKey))
+                throw new Error(
+                    `the key "${storeKey}" from ${getStorageName(
+                        storage,
+                    )} is already taken.`,
+                );
             takenField.add(storeKey);
         }
     }
@@ -50,7 +64,10 @@ export class TypedStorage<Body extends object> {
         return this.getItem(key) != null;
     }
     setItem<Key extends string & keyof Body>(key: Key, value: Body[Key]): void {
-        this.storage.setItem(this.prefix + key, this.converters[key].stringify(value));
+        this.storage.setItem(
+            this.prefix + key,
+            this.converters[key].stringify(value),
+        );
     }
     removeItem(key: string & keyof Body): void {
         this.storage.removeItem(this.prefix + key);
@@ -64,15 +81,20 @@ export class TypedStorage<Body extends object> {
 export const booleanConverter: Converter<boolean> = {
     parse: value => {
         switch (value) {
-            case "0": return false;
-            case "1": return true;
-            default: return null;
+            case "0":
+                return false;
+            case "1":
+                return true;
+            default:
+                return null;
         }
     },
     stringify: value => {
         switch (value) {
-            case false: return "0";
-            case true: return "1";
+            case false:
+                return "0";
+            case true:
+                return "1";
         }
     },
 };
@@ -80,7 +102,9 @@ export const stringConverter: Converter<string> = {
     parse: value => value,
     stringify: value => value,
 };
-export function enumConverterFactory<Enum extends string>(enumTuple: Enum[]): Converter<Enum> {
+export function enumConverterFactory<Enum extends string>(
+    enumTuple: Enum[],
+): Converter<Enum> {
     return {
         parse: value => {
             if ((enumTuple as string[]).includes(value)) return value as Enum;
@@ -108,7 +132,7 @@ export const floatConverter: Converter<number> = {
 export const isoDateConverter: Converter<Date> = {
     parse: value => {
         const date = new Date(value);
-        if (Number.isNaN(+ date)) return null;
+        if (Number.isNaN(+date)) return null;
         return date;
     },
     stringify: value => value.toISOString(),

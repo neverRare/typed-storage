@@ -1,9 +1,6 @@
 {
     "compilerOptions": {
-        "lib": [
-            "esnext",
-            "dom",
-        ],
+        "lib": ["esnext", "dom"],
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
@@ -11,9 +8,7 @@
         "declaration": true,
         "outDir": "dist",
         "target": "es5",
-        "module": "CommonJS"
+        "module": "CommonJS",
     },
-    "include": [
-        "src/**/*",
-    ],
+    "include": ["src/**/*"],
 }
