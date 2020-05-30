@@ -7,7 +7,7 @@ export interface Converter<Value> {
 export type Converters<Body extends object> = {
     [Key in keyof Body]: Converter<Body[Key]>;
 };
-const takenKeys = new Map<Storage, Set<string>>();
+const takenKeys = new WeakMap<Storage, Set<string>>();
 function getTakenKey(storage: Storage): Set<string> {
     if (takenKeys.has(storage)) return takenKeys.get(storage)!;
     const set = new Set<string>();
