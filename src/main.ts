@@ -25,9 +25,11 @@ function getStorageName(storage: Storage): string {
     }
 }
 /**
- * A Storage API wrapper that allows storing any type of value in type-safe way and with simple key prefixing.
+ * A Storage API wrapper that allows storing any type of value in type-safe way
+ * and with simple key prefixing.
  *
- * Throws a "key is already taken" Error when some key is already taken from previously defined TypedStorage instance.
+ * Throws a "key is already taken" Error when some key is already taken from
+ * previously defined TypedStorage instance.
  */
 export class TypedStorage<Body extends object> {
     private readonly prefix: string;
@@ -63,20 +65,31 @@ export class TypedStorage<Body extends object> {
             takenField.add(storeKey);
         }
     }
-    /** Returns the current value associated with the given key, or null if the given key does not exist in the list associated with the object or if the value is not parseable by a Converter. */
+    /**
+     * Returns the current value associated with the given key, or null if the
+     * given key does not exist in the list associated with the object or if the
+     * value is not parseable by the Converter.
+     */
     getItem<Key extends string & keyof Body>(key: Key): null | Body[Key] {
         const item = this.storage.getItem(this.prefix + key);
         if (item == null) return null;
         return this.converters[key].parse(item);
     }
-    /** Returns a boolean indicating whether the given key have associated value and the value is parseable by the Converter. This is similar to `this.getItem(key) != null` */
+    /**
+     * Returns a boolean indicating whether the given key have associated value
+     * and the value is parseable by the Converter. This is similar to
+     * `this.getItem(key) != null`
+     */
     hasItem(key: string & keyof Body): boolean {
         return this.getItem(key) != null;
     }
     /**
-     * Sets the value of the pair identified by key to value, creating a new key/value pair if none existed for key previously.
+     * Sets the value of the pair identified by key to value, creating a new
+     * key/value pair if none existed for key previously.
      *
-     * Throws a "QuotaExceededError" DOMException exception if the new value couldn't be set. (Setting could fail if, e.g., the user has disabled storage for the site, or if the quota has been exceeded.)
+     * Throws a "QuotaExceededError" DOMException exception if the new value
+     * couldn't be set. (Setting could fail if, e.g., the user has disabled
+     * storage for the site, or if the quota has been exceeded.)
      */
     setItem<Key extends string & keyof Body>(key: Key, value: Body[Key]): void {
         this.storage.setItem(
@@ -84,7 +97,10 @@ export class TypedStorage<Body extends object> {
             this.converters[key].stringify(value),
         );
     }
-    /** Removes the key/value pair with the given key from the list associated with the object, if a key/value pair with the given key exists. */
+    /**
+     * Removes the key/value pair with the given key from the list associated
+     * with the object, if a key/value pair with the given key exists.
+     */
     removeItem(key: string & keyof Body): void {
         this.storage.removeItem(this.prefix + key);
     }
@@ -124,7 +140,8 @@ export const stringConverter: Converter<string> = {
 /**
  * A union of string Converter factory for TypedStorage.
  *
- * Usage Note: The parameter should exhaust all string from type parameter Enum. Letting TypeScript infer for Enum is recommended.
+ * Usage Note: The parameter should exhaust all string from type parameter Enum.
+ * Letting TypeScript infer for Enum is recommended.
  */
 export function enumConverterFactory<Enum extends string>(
     enumTuple: Enum[],
@@ -155,7 +172,7 @@ export const floatConverter: Converter<number> = {
     },
     stringify: value => value.toString(),
 };
-/** A Date Converter for TypedStorage, stored as ISO string. */
+/** A Date Converter for TypedStorage. Stored as ISO string. */
 export const isoDateConverter: Converter<Date> = {
     parse: value => {
         const date = new Date(value);
