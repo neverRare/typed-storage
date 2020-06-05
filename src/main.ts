@@ -172,7 +172,7 @@ export const floatConverter: Converter<number> = {
     },
     stringify: value => value.toString(),
 };
-/** A Date Converter for TypedStorage. Stored as ISO string. */
+/** A Date Converter for TypedStorage. Stored as string in ISO format. */
 export const isoDateConverter: Converter<Date> = {
     parse: value => {
         const date = new Date(value);
