@@ -1,11 +1,11 @@
 /** A Storage value converter (parser and stringifier) for TypedStorage */
 export interface Converter<Value> {
-    parse: (value: string) => null | Value;
-    stringify: (value: Value) => string;
+    readonly parse: (value: string) => null | Value;
+    readonly stringify: (value: Value) => string;
 }
 /** A record of Converter for TypedStorage */
 export type Converters<Body extends object> = {
-    [Key in keyof Body]: Converter<Body[Key]>;
+    readonly [Key in keyof Body]: Converter<Body[Key]>;
 };
 const takenKeys = new WeakMap<Storage, Set<string>>();
 function getTakenKey(storage: Storage): Set<string> {
@@ -30,13 +30,13 @@ function getStorageName(storage: Storage): string {
  * Throws a "key is already taken" Error when some key is already taken from previously defined TypedStorage instance.
  */
 export class TypedStorage<Body extends object> {
-    private prefix: string;
-    private converters: Converters<Body>;
+    private readonly prefix: string;
+    private readonly converters: Converters<Body>;
 
     constructor(storage: Storage, converters: Converters<Body>);
     constructor(storage: Storage, prefix: string, converters: Converters<Body>);
     constructor(
-        private storage: Storage,
+        private readonly storage: Storage,
         prefix: string | Converters<Body>,
         converters?: Converters<Body>,
     ) {
