@@ -53,12 +53,13 @@ export class TypedStorage<Body extends object> {
         const takenField = getTakenKey(storage);
         for (const key of Object.keys(converters)) {
             const storeKey = this.prefix + key;
-            if (takenField.has(storeKey))
+            if (takenField.has(storeKey)) {
                 throw new Error(
                     `the key "${storeKey}" from ${getStorageName(
                         storage,
                     )} is already taken.`,
                 );
+            }
             takenField.add(storeKey);
         }
     }
