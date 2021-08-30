@@ -1,6 +1,6 @@
 {
     "name": "@never-rare/typed-storage",
-    "version": "0.0.3",
+    "version": "0.1.0",
     "description": "A typed and minimal Storage API wrapper",
     "main": "dist/main.js",
     "scripts": {
