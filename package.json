@@ -10,14 +10,13 @@
     "repository": "https://github.com/neverRare/typed-storage",
     "author": "neverRare",
     "devDependencies": {
-        "prettier": "^2.0.5",
-        "typescript": "^3.9.5"
+        "prettier": "^2.3.2",
+        "typescript": "^4.4.2"
     },
     "keywords": [
         "storage",
         "localStorage",
         "sessionStorage"
     ],
-    "dependencies": {},
     "license": "MIT"
 }
